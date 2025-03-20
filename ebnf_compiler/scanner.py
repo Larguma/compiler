@@ -80,41 +80,39 @@ class Scanner(BaseModel):
 
     def skip_comment(self) -> None:
         # check for comments and skip them (* ... *)
-        if self._ch == "(":
-            logger.debug("Comment: (")
-            com_line = self._line_no
-            com_col = self._col_no
-            self.get_next_char()
-            if self._ch != "*":
-                logger.debug("Not a comment")
-                return False
-            logger.debug("Skipping comment")
-            self.get_next_char()
-            while not self.eof:
-                logger.debug(f"Comment: {self._ch}")
-                if self._ch == "(":
-                    logger.debug("Comment: (")
-                    self.skip_comment()
-                if self._ch == "*":
-                    self.get_next_char()
-                    if self._ch == ")":
-                        logger.debug("Comment: )")
-                        break
+        com_col: int = self._col_no
+        com_line: int = self._line_no
+        logger.debug(f"Skipping comment at line {com_line} and column {com_col}")
+        self.get_next_char()
+        while not self.eof:
+            if self._ch == "(":
                 self.get_next_char()
-            if self.eof:
-                self.raise_error(
-                    f"Unterminated comment at line {com_line}, column {com_col}"
-                )
+                if self._ch == "*":
+                    self.skip_comment()
+            if self._ch == "*":
+                self.get_next_char()
+                if self._ch == ")":
+                    break
             self.get_next_char()
-            return True
+        if self.eof:
+            self.raise_error(
+                f"Unterminated comment at line {com_line} and column {com_col}"
+            )
+        self.get_next_char()
 
     def get_next_symbol(self):
         self.skip_space()
-        if not self.skip_comment():
-            self.sym = Token.LPAREN
-            self.value = self._ch
-        self.skip_space()
+        while self._ch == "(":
+            self.get_next_char()
+            if self._ch == "*":
+                self.skip_comment()
+            else:
+                self.sym = Token.LPAREN
+                self.value = self._ch
+                self.get_next_char()
+                return
 
+            self.skip_space()
         if self._ch.isalpha():
             self.sym = Token.IDENT
             self.value = self._ch
