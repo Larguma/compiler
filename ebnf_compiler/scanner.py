@@ -102,17 +102,7 @@ class Scanner(BaseModel):
 
     def get_next_symbol(self):
         self.skip_space()
-        while self._ch == "(":
-            self.get_next_char()
-            if self._ch == "*":
-                self.skip_comment()
-            else:
-                self.sym = Token.LPAREN
-                self.value = self._ch
-                self.get_next_char()
-                return
 
-            self.skip_space()
         if self._ch.isalpha():
             self.sym = Token.IDENT
             self.value = self._ch
@@ -134,6 +124,15 @@ class Scanner(BaseModel):
         elif self._ch == "":
             self.sym = Token.EOF
             self.value = ""
+        elif self._ch == "(":
+            self.get_next_char()
+            if self._ch == "*":
+                self.skip_comment()
+                self.get_next_symbol()
+            else:
+                self.sym = Token.LPAREN
+                self.value = self._ch
+                return
         elif self._ch in self.token_map:
             self.sym = self.token_map[self._ch]
             self.value = self._ch
