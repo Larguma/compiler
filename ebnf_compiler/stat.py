@@ -9,7 +9,7 @@ AST Statistics
 import ebnf_compiler.ast0 as ast
 
 
-def symbols(root: ast.Syntax) -> tuple[set[str], set[str]]:
+def symbols(root: ast.Syntax) -> tuple[set[str], set[str]]:  # noqa: C901
     non_terminals: set[str] = set()
     terminals: set[str] = set()
 

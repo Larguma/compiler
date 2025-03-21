@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 Jacques Supcik <jacques.supcik@hefr.ch>
+#
+# SPDX-License-Identifier: Apache-2.0 OR MIT
+
 *.pyc
 
 # Packages
@@ -17,3 +21,8 @@
 
 .venv
 /poetry.toml
+*.wasm
+*.ebnf
+*.mod
+poetry.lock
+.ruff_cache
